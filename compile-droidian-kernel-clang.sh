@@ -203,14 +203,16 @@ fn_install_toolchains
 if [ "$1" == "releng" ]; then
     fn_build_kernel_droidian_releng
 elif [ "$1" == "clang" ]; then
+    fn_clang_manual_vars
+
     fn_menuconfig
     ###fn_mrproper
     #fn_gen_main_defconfig
     ###fn_set_defconfig
     #fn_merge_fragments
     #fn_olddefconfig
-    fn_build_kernel_clang_manual
+    #### fn_build_kernel_clang_manual
 else
     echo
-    echo "Please type \"droidian\" or \"clang<F12\""
+    echo "Please type \"droidian\" or \"clang\""
 fi
