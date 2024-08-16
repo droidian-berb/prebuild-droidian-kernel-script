@@ -4,8 +4,8 @@
 #
 # Version: 0.0.4
 #
-# Upstream-Name: compile-droidian-kernel-clang
-# Source: https://github.com/droidian-berb/compile-droidian-kernel-clang
+# Upstream-Name: prebuild-droidian-kernel-script
+# Source: https://github.com/droidian-berb/prebuild-droidian-kernel-script
 #
 # Copyright (C) 2024 Berbascum <berbascum@ticv.cat>
 # All rights reserved.
