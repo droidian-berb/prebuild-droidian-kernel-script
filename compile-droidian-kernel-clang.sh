@@ -2,7 +2,7 @@
 
 ## Script to compile a Droidian kernel with clang
 #
-# Version: 0.0.4
+# Version: 0.0.5
 #
 # Upstream-Name: prebuild-droidian-kernel-script
 # Source: https://github.com/droidian-berb/prebuild-droidian-kernel-script
@@ -107,8 +107,72 @@ fn_clang_manual_vars() {
     export CLANG_TRIPLE=aarch64-linux-gnu-
 }
 
-fn_build_kernel_clang_manual() {
+fn_mrproper() {
+    make -C /buildd/sources ARCH=arm64 \
+	O=/buildd/sources/out/KERNEL_OBJ \
+	CC=$COMPILER \
+	mrproper
+}
 
+fn_gen_main_defconfig() {
+    ## Load android kernel original main defconfig
+    make -C /buildd/sources ARCH=arm64 \
+	O=/buildd/sources/out/KERNEL_OBJ \
+	CC=$COMPILER \
+        vendor/sm8150_defconfig
+    ## Merge original device fragments into main defconfig
+    ## to create the droidian main defconfig
+    /buildd/sources/scripts/kconfig/merge_config.sh \
+	-O /buildd/sources/out/KERNEL_OBJ \
+	-m /buildd/sources/out/KERNEL_OBJ/.config \
+	/buildd/sources/arch/arm64/configs/vendor/xiaomi/sm8150-common.config
+    /buildd/sources/scripts/kconfig/merge_config.sh \
+	-O /buildd/sources/out/KERNEL_OBJ \
+	-m /buildd/sources/out/KERNEL_OBJ/.config \
+	/buildd/sources/arch/arm64/configs/vendor/xiaomi/vayu.config
+    ## copy .config to arch configs base dir
+    cp -av  out/KERNEL_OBJ/.config \
+	    /buildd/sources/arch/arm64/configs/vayu_user_defconfig
+}
+
+fn_set_defconfig() {
+    make -C /buildd/sources ARCH=arm64 \
+	O=/buildd/sources/out/KERNEL_OBJ \
+	CC=$COMPILER \
+	vayu_user_defconfig
+}
+
+fn_merge_fragments() {
+    /buildd/sources/scripts/kconfig/merge_config.sh \
+	-O /buildd/sources/out/KERNEL_OBJ \
+	-m /buildd/sources/out/KERNEL_OBJ/.config \
+	/buildd/sources/droidian/vayu.config \
+	/buildd/sources/droidian/common_fragments/droidian.config \
+	/buildd/sources/droidian/common_fragments/halium.config
+}
+
+fn_menuconfig() {
+    make -C /buildd/sources ARCH=arm64 \
+	O=/buildd/sources/out/KERNEL_OBJ \
+	CC=$COMPILER \
+	menuconfig
+}
+
+fn_olddefconfig() {
+    make -C /buildd/sources ARCH=arm64 \
+	O=/buildd/sources/out/KERNEL_OBJ \
+	CC=$COMPILER \
+	KCONFIG_CONFIG=/buildd/sources/out/KERNEL_OBJ/.config olddefconfig
+}
+
+fn_build_kernel_clang_manual() {
+    make -C /buildd/sources ARCH=arm64 \
+     KERNELRELEASE=4.14-290-xiaomi-vayu \
+     LLVM=1 LLVM_IAS=1 \
+     -j8 \
+     O=/buildd/sources/out/KERNEL_OBJ \
+     CC=$COMPILER
+     # CXX=clang++ \
 }
 
 ###########################################
@@ -132,9 +196,16 @@ fn_enable_ccache
 ## CUSTOM TOOLCHAIN
 fn_install_toolchains
    ## Paths are defined in kernel-info.mk
+
 if [ "$1" == "releng" ]; then
     fn_build_kernel_droidian_releng
 elif [ "$1" == "clang" ]; then
+    fn_menuconfig
+    ###fn_mrproper
+    #fn_gen_main_defconfig
+    ###fn_set_defconfig
+    #fn_merge_fragments
+    #fn_olddefconfig
     fn_build_kernel_clang_manual
 else
     echo
