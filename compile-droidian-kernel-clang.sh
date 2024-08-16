@@ -108,6 +108,8 @@ fn_clang_manual_vars() {
     export CROSS_COMPILE=aarch64-linux-${CROSS_TYPE}-
     export CROSS_COMPILE_ARM32=aarch64-linux-${CROSS_TYPE}-
     export CLANG_TRIPLE=aarch64-linux-gnu-
+
+    export PATH=$PATH:$ROOTDIR/build-tools/linux-x86/bin:$ROOTDIR/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/aarch64-linux-android/bin:$ROOTDIR/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/bin:$ROOTDIR/android_prebuilts_clang_kernel_linux-x86_clang-r416183b/bin:$ROOTDIR/android_prebuilts_tools-lineage/linux-x86/bin
 }
 
 fn_mrproper() {
