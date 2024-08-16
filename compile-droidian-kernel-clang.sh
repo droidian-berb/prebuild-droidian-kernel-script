@@ -2,7 +2,7 @@
 
 ## Script to compile a Droidian kernel with clang
 #
-# Version: 0.0.2
+# Version: 0.0.3
 #
 # Upstream-Name: compile-droidian-kernel-clang
 # Source: https://github.com/droidian-berb/compile-droidian-kernel-clang
@@ -41,6 +41,14 @@ ROOTDIR="/opt"
 fn_install_prereqs() {
  apt-get install linux-packaging-snippets bc bison build-essential ccache curl flex git git-lfs gnupg gperf imagemagick libelf-dev  libncurses5-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev python3 python-is-python3
 # libsdl1.2-dev
+}
+
+fn_enable_ccache() {
+    ## Use ccache tu speedup the build
+    export USE_CCACHE=1
+    export CCACHE_EXEC=/usr/bin/ccache
+    ccache -M 10G
+    ccache -o compression=false
 }
 
 fn_install_toolchains() {
@@ -84,6 +92,7 @@ fn_build_kernel_droidian_releng() {
 }
 
 fn_install_prereqs
+fn_enable_ccache
 
 ## CUSTOM TOOLCHAIN
 fn_install_toolchains
