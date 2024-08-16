@@ -2,7 +2,7 @@
 
 ## Script to compile a Droidian kernel with clang
 #
-# Version: 0.0.3
+# Version: 0.0.4
 #
 # Upstream-Name: compile-droidian-kernel-clang
 # Source: https://github.com/droidian-berb/compile-droidian-kernel-clang
@@ -79,6 +79,37 @@ fn_invert_PATH_kernel_snippet() {
     sed -i 's|FULL_PATH = $(BUILD_PATH):$(CURDIR)/debian/path-override:${PATH}|FULL_PATH = ${PATH}:$(BUILD_PATH):$(CURDIR)/debian/path-override|g' /usr/share/linux-packaging-snippets/kernel-snippet.mk
 }
 
+
+########################################
+## Clang manual compilation functions ##
+########################################
+fn_clang_manual_vars() {
+    # CLANG_VER="9.0-r353983c"
+    # CLANG_VER="10.0-r370808"
+    # CLANG_VER="12.0-r416183b"
+    CLANG_VER="14.0-r450784d"
+    # CROSS_TYPE="android"
+    CROSS_TYPE="gnu"
+    #COMPILER="aarch64-linux-android-gcc-4.9"
+    COMPILER=clang
+    CLANG_PATH="/usr/lib/llvm-android-${CLANG_VER}/bin"
+    export PATH=${CLANG_PATH}:$PATH
+    export AS=aarch64-linux-${CROSS_TYPE}-as
+    export LD=aarch64-linux-${CROSS_TYPE}-ld
+    export AR=aarch64-linux-${CROSS_TYPE}-ar
+    export NM=aarch64-linux-${CROSS_TYPE}-nm
+    # export OBJCOPY=aarch64-linux-${CROSS_TYPE}-objcopy
+    # export OBJDUMP=aarch64-linux-${CROSS_TYPE}-objdump
+    # export STRIP=aarch64-linux-${CROSS_TYPE}-strip
+}
+
+fn_build_kernel_clang_manual() {
+
+}
+
+###########################################
+## Droidian releng compilation functions ##
+###########################################
 fn_build_kernel_droidian_releng() {
     ## Reconf PATH in kernel snippet (if using custom gcc)
     fn_invert_PATH_kernel_snippet
@@ -97,4 +128,11 @@ fn_enable_ccache
 ## CUSTOM TOOLCHAIN
 fn_install_toolchains
    ## Paths are defined in kernel-info.mk
-fn_build_kernel_droidian_releng
+if [ "$1" == "releng" ]; then
+    fn_build_kernel_droidian_releng
+elif [ "$1" == "clang" ]; then
+    fn_build_kernel_clang_manual
+else
+    echo
+    echo "Please type \"droidian\" or \"clang<F12\""
+fi
