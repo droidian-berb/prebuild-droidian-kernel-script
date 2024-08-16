@@ -88,11 +88,11 @@ fn_clang_manual_vars() {
     # CLANG_VER="10.0-r370808"
     # CLANG_VER="12.0-r416183b"
     CLANG_VER="14.0-r450784d"
-    # CROSS_TYPE="android"
-    CROSS_TYPE="gnu"
-    #COMPILER="aarch64-linux-android-gcc-4.9"
+    CROSS_TYPE="android" # | gnu
+    # COMPILER="aarch64-linux-android-gcc-4.9"
     COMPILER=clang
     CLANG_PATH="/usr/lib/llvm-android-${CLANG_VER}/bin"
+    # CLANG=$CLANG_PATH/clang
     export PATH=${CLANG_PATH}:$PATH
     export AS=aarch64-linux-${CROSS_TYPE}-as
     export LD=aarch64-linux-${CROSS_TYPE}-ld
@@ -101,6 +101,10 @@ fn_clang_manual_vars() {
     # export OBJCOPY=aarch64-linux-${CROSS_TYPE}-objcopy
     # export OBJDUMP=aarch64-linux-${CROSS_TYPE}-objdump
     # export STRIP=aarch64-linux-${CROSS_TYPE}-strip
+    export ARCH=arm64
+    export CROSS_COMPILE=aarch64-linux-${CROSS_TYPE}-
+    export CROSS_COMPILE_ARM32=aarch64-linux-${CROSS_TYPE}-
+    export CLANG_TRIPLE=aarch64-linux-gnu-
 }
 
 fn_build_kernel_clang_manual() {
