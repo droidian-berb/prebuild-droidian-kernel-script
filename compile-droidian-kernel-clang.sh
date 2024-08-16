@@ -37,6 +37,7 @@
 
 START_DIR="/buildd/sources"
 ROOTDIR="/opt"
+export ARCH=arm64
 
 fn_install_prereqs() {
  apt-get install linux-packaging-snippets bc bison build-essential ccache curl flex git git-lfs gnupg gperf imagemagick libelf-dev  libncurses5-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev python3 python-is-python3
@@ -84,6 +85,9 @@ fn_invert_PATH_kernel_snippet() {
 ## Clang manual compilation functions ##
 ########################################
 fn_clang_manual_vars() {
+    DEFCONFIG_BASE="sm8150_defconfig" ## For merge frags.
+    DEFCONFIG_MAIN="vayu_user_defconfig" ## kernel build
+    KERNEL_RELEASE="4.14-290-xiaomi-vayu"
     # CLANG_VER="9.0-r353983c"
     # CLANG_VER="10.0-r370808"
     # CLANG_VER="12.0-r416183b"
@@ -101,14 +105,13 @@ fn_clang_manual_vars() {
     # export OBJCOPY=aarch64-linux-${CROSS_TYPE}-objcopy
     # export OBJDUMP=aarch64-linux-${CROSS_TYPE}-objdump
     # export STRIP=aarch64-linux-${CROSS_TYPE}-strip
-    export ARCH=arm64
     export CROSS_COMPILE=aarch64-linux-${CROSS_TYPE}-
     export CROSS_COMPILE_ARM32=aarch64-linux-${CROSS_TYPE}-
     export CLANG_TRIPLE=aarch64-linux-gnu-
 }
 
 fn_mrproper() {
-    make -C /buildd/sources ARCH=arm64 \
+    make -C /buildd/sources ARCH=${ARCH} \
 	O=/buildd/sources/out/KERNEL_OBJ \
 	CC=$COMPILER \
 	mrproper
@@ -116,30 +119,30 @@ fn_mrproper() {
 
 fn_gen_main_defconfig() {
     ## Load android kernel original main defconfig
-    make -C /buildd/sources ARCH=arm64 \
+    make -C /buildd/sources ARCH=${ARCH} \
 	O=/buildd/sources/out/KERNEL_OBJ \
 	CC=$COMPILER \
-        vendor/sm8150_defconfig
+        vendor/${DEFCONFIG_BASE}
     ## Merge original device fragments into main defconfig
     ## to create the droidian main defconfig
     /buildd/sources/scripts/kconfig/merge_config.sh \
 	-O /buildd/sources/out/KERNEL_OBJ \
 	-m /buildd/sources/out/KERNEL_OBJ/.config \
-	/buildd/sources/arch/arm64/configs/vendor/xiaomi/sm8150-common.config
+	/buildd/sources/arch/${ARCH}/configs/vendor/xiaomi/sm8150-common.config
     /buildd/sources/scripts/kconfig/merge_config.sh \
 	-O /buildd/sources/out/KERNEL_OBJ \
 	-m /buildd/sources/out/KERNEL_OBJ/.config \
-	/buildd/sources/arch/arm64/configs/vendor/xiaomi/vayu.config
+	/buildd/sources/arch/${ARCH}/configs/vendor/xiaomi/vayu.config
     ## copy .config to arch configs base dir
     cp -av  out/KERNEL_OBJ/.config \
-	    /buildd/sources/arch/arm64/configs/vayu_user_defconfig
+	    /buildd/sources/arch/${ARCH}/configs/${DEFCONFIG_MAIN}
 }
 
 fn_set_defconfig() {
-    make -C /buildd/sources ARCH=arm64 \
+    make -C /buildd/sources ARCH=${ARCH} \
 	O=/buildd/sources/out/KERNEL_OBJ \
 	CC=$COMPILER \
-	vayu_user_defconfig
+        ${DEFCONFIG_MAIN}
 }
 
 fn_merge_fragments() {
@@ -152,22 +155,22 @@ fn_merge_fragments() {
 }
 
 fn_menuconfig() {
-    make -C /buildd/sources ARCH=arm64 \
+    make -C /buildd/sources ARCH=${ARCH} \
 	O=/buildd/sources/out/KERNEL_OBJ \
 	CC=$COMPILER \
 	menuconfig
 }
 
 fn_olddefconfig() {
-    make -C /buildd/sources ARCH=arm64 \
+    make -C /buildd/sources ARCH=${ARCH} \
 	O=/buildd/sources/out/KERNEL_OBJ \
 	CC=$COMPILER \
 	KCONFIG_CONFIG=/buildd/sources/out/KERNEL_OBJ/.config olddefconfig
 }
 
 fn_build_kernel_clang_manual() {
-    make -C /buildd/sources ARCH=arm64 \
-     KERNELRELEASE=4.14-290-xiaomi-vayu \
+    make -C /buildd/sources ARCH=${ARCH} \
+     KERNELRELEASE=${KERNEL_RELEASE} \
      LLVM=1 LLVM_IAS=1 \
      -j8 \
      O=/buildd/sources/out/KERNEL_OBJ \
@@ -187,7 +190,7 @@ fn_build_kernel_droidian_releng() {
     rm -f debian/control
     debian/rules debian/control
     ## Call releng
-    RELENG_HOST_ARCH=arm64 releng-build-package
+    RELENG_HOST_ARCH=${ARCH} releng-build-package
 }
 
 fn_install_prereqs
