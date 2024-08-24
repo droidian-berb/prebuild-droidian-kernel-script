@@ -36,6 +36,8 @@
 
 
 START_DIR="/buildd/sources"
+KERNEL_DIR="${START_DIR}"
+## TODO: abort if not in KERNEL_DIR
 ROOTDIR="/opt"
 ## The arch var is used by clang-manual, but not by releng
 export ARCH=arm64
@@ -46,7 +48,7 @@ fn_install_prereqs() {
 }
 
 fn_install_prereqs_droidian_kernel_info() {
-    apt-get install binutils-aarch64-linux-gnu clang-android-${CLANG_VER} gcc-4.9-aarch64-linux-android g++-4.9-aarch64-linux-android libgcc-4.9-dev-aarch64-linux-android-cross
+    apt-get install binutils-aarch64-linux-gnu clang-android-${CLANG_VERSION} gcc-4.9-aarch64-linux-android g++-4.9-aarch64-linux-android libgcc-4.9-dev-aarch64-linux-android-cross
 }
 
 fn_enable_ccache() {
@@ -90,7 +92,7 @@ fn_invert_PATH_kernel_snippet() {
 ## Clang manual lineage build tools ##
 ######################################
 fn_clang_manual_droidian_gcc_vars() {
-    CLANG_PATH="/usr/lib/llvm-android-${CLANG_VER}/bin"
+    CLANG_PATH="/usr/lib/llvm-android-${CLANG_VERSION}/bin"
     export PATH="$PATH:${CLANG_PATH}"
 }
 fn_clang_manual_lineage_gcc_vars() {
@@ -98,12 +100,18 @@ fn_clang_manual_lineage_gcc_vars() {
     export PATH=$PATH:$ROOTDIR/build-tools/linux-x86/bin:$ROOTDIR/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/aarch64-linux-android/bin:$ROOTDIR/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/bin::$ROOTDIR/android_prebuilts_tools-lineage/linux-x86/bin
 }
 
+fn_releng_vars() {
+    export ARCH=$(cat "${KERNEL_DIR}" | grep "KERNEL_ARCH" | awk '{print $3}')
+    ## CLANG_VERSION requires a same name var in kernel-info.mk
+    CLANG_VERSION="$(cat "${KERNEL_DIR}" | grep "^CLANG_VERSION = " | awk '{print $3}')"
+}
+
 fn_clang_manual_vars() {
     ## Clang version vars
-    # CLANG_VER="9.0-r353983c"
-    # CLANG_VER="10.0-r370808"
-    # CLANG_VER="12.0-r416183b"
-    CLANG_VER="14.0-r450784d"
+    # CLANG_VERSION="9.0-r353983c"
+    # CLANG_VERSION="10.0-r370808"
+    # CLANG_VERSION="12.0-r416183b"
+    CLANG_VERSION="14.0-r450784d"
     ## defconfig files vars
     DEFCONFIG_SOC="vendor/sm8150_defconfig"
     DEFCONFIG_MODEL="vayu_user_defconfig"
@@ -224,6 +232,7 @@ if [ "$1" == "releng" ]; then
     ## Reconf PATH in kernel snippet (if using custom gcc)
 #   fn_invert_PATH_kernel_snippet
 #   fn_install_prereqs_droidian_kernel_info
+    fn_releng_vars
     fn_build_kernel_droidian_releng
     #
     #
