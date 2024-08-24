@@ -2,7 +2,7 @@
 
 ## Script to compile a Droidian kernel with clang
 #
-# Version: 0.0.7
+# Version: 0.0.8
 #
 # Upstream-Name: prebuild-droidian-kernel-script
 # Source: https://github.com/droidian-berb/prebuild-droidian-kernel-script
@@ -37,11 +37,8 @@
 
 START_DIR="/buildd/sources"
 ROOTDIR="/opt"
+## The arch var is used by clang-manual, but not by releng
 export ARCH=arm64
-# CLANG_VER="9.0-r353983c"
-# CLANG_VER="10.0-r370808"
-#CLANG_VER="12.0-r416183b"
-CLANG_VER="14.0-r450784d"
 
 fn_install_prereqs() {
  apt-get install linux-packaging-snippets bc bison build-essential ccache curl flex git git-lfs gnupg gperf imagemagick libelf-dev  libncurses5-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev python3 python-is-python3
@@ -102,6 +99,12 @@ fn_clang_manual_lineage_gcc_vars() {
 }
 
 fn_clang_manual_vars() {
+    ## Clang version vars
+    # CLANG_VER="9.0-r353983c"
+    # CLANG_VER="10.0-r370808"
+    # CLANG_VER="12.0-r416183b"
+    CLANG_VER="14.0-r450784d"
+    ## defconfig files vars
     DEFCONFIG_SOC="vendor/sm8150_defconfig"
     DEFCONFIG_MODEL="vayu_user_defconfig"
     DEFCONFIG_MAIN="vayu_main_defconfig"
