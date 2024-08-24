@@ -2,7 +2,7 @@
 
 ## Script to compile a Droidian kernel with clang
 #
-# Version: 0.0.6
+# Version: 0.0.7
 #
 # Upstream-Name: prebuild-droidian-kernel-script
 # Source: https://github.com/droidian-berb/prebuild-droidian-kernel-script
@@ -102,9 +102,10 @@ fn_clang_manual_lineage_gcc_vars() {
 }
 
 fn_clang_manual_vars() {
-    DEFCONFIG_BASE="sm8150_defconfig" ## For merge frags.
-    DEFCONFIG_MAIN="vayu_user_defconfig" ## kernel build
-    KERNEL_RELEASE="4.14-190-xiaomi-vayu"
+    DEFCONFIG_SOC="vendor/sm8150_defconfig"
+    DEFCONFIG_MODEL="vayu_user_defconfig"
+    DEFCONFIG_MAIN="vayu_main_defconfig"
+    KERNEL_RELEASE="4.14-290-xiaomi-vayu"
     CROSS_TYPE="android" # | gnu
     # COMPILER="aarch64-linux-android-gcc-4.9"
     COMPILER=clang
@@ -136,27 +137,25 @@ fn_mrproper() {
 }
 
 fn_gen_main_defconfig() {
-    ## Load android kernel original main defconfig
-    make -C /buildd/sources ARCH=${ARCH} \
-	O=/buildd/sources/out/KERNEL_OBJ \
-	CC=$COMPILER \
-        vendor/${DEFCONFIG_BASE}
-    ## Merge original device fragments into main defconfig
-    ## to create the droidian main defconfig
+    ## Load soc_defconfig as base
+    fn_set_defconfig "${DEFCONFIG_SOC}"
+    echo "" && echo "soc_defconfig loaded" && echo ""
+    ## Merge model_defconfig into .config
     /buildd/sources/scripts/kconfig/merge_config.sh \
 	-O /buildd/sources/out/KERNEL_OBJ \
 	-m /buildd/sources/out/KERNEL_OBJ/.config \
-	/buildd/sources/arch/${ARCH}/configs/vendor/xiaomi/sm8150-common.config
-    /buildd/sources/scripts/kconfig/merge_config.sh \
-	-O /buildd/sources/out/KERNEL_OBJ \
-	-m /buildd/sources/out/KERNEL_OBJ/.config \
-	/buildd/sources/arch/${ARCH}/configs/vendor/xiaomi/vayu.config
+	 /buildd/sources/arch/${ARCH}/configs/"${DEFCONFIG_MODEL}"
+    echo "" && echo "device_defconfig merged" && echo ""
+    ## regenerate .config
+    fn_olddefconfig
+    echo "" &&  echo ".config regenerated" && echo ""
     ## copy .config to arch configs base dir
-    cp -av  out/KERNEL_OBJ/.config \
-	    /buildd/sources/arch/${ARCH}/configs/${DEFCONFIG_MAIN}
+    cp -v  out/KERNEL_OBJ/.config \
+        /buildd/sources/arch/${ARCH}/configs/${DEFCONFIG_MAIN}
 }
 
 fn_set_defconfig() {
+    [ -z "${DEFCONFIG_MAIN}" ] && DEFCONFIG_MAIN=$1
     make -C /buildd/sources ARCH=${ARCH} \
 	O=/buildd/sources/out/KERNEL_OBJ \
 	CC=$COMPILER \
@@ -222,17 +221,18 @@ if [ "$1" == "releng" ]; then
     fn_install_prereqs_droidian_kernel_info
     fn_build_kernel_droidian_releng
 elif [ "$1" == "clang" ]; then
-    fn_install_prereqs_droidian_kernel_info
+    #
+    #
+#   fn_install_prereqs_droidian_kernel_info
     fn_clang_manual_droidian_gcc_vars
-    #fn_clang_manual_lineage_gcc_vars
+#   fn_clang_manual_lineage_gcc_vars
     fn_clang_manual_vars
-
-    fn_menuconfig
-    ###fn_mrproper
-    #fn_gen_main_defconfig
-    ###fn_set_defconfig
+#   fn_menuconfig
+#   fn_mrproper
+#   fn_gen_main_defconfig
+#   fn_set_defconfig
     #fn_merge_fragments
-    #fn_olddefconfig
+#   fn_olddefconfig
     #### fn_build_kernel_clang_manual
 else
     echo
