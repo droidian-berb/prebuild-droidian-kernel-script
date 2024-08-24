@@ -199,8 +199,6 @@ fn_build_kernel_clang_manual() {
 ## Droidian releng compilation functions ##
 ###########################################
 fn_build_kernel_droidian_releng() {
-    ## Reconf PATH in kernel snippet (if using custom gcc)
-    fn_invert_PATH_kernel_snippet
     ## Pre compile configs
     chmod +x /buildd/sources/debian/rules
     cd /buildd/sources
@@ -218,8 +216,14 @@ fn_enable_ccache
    ## Paths are defined in kernel-info.mk
 
 if [ "$1" == "releng" ]; then
-    fn_install_prereqs_droidian_kernel_info
+    #
+    #
+    ## Reconf PATH in kernel snippet (if using custom gcc)
+#   fn_invert_PATH_kernel_snippet
+#   fn_install_prereqs_droidian_kernel_info
     fn_build_kernel_droidian_releng
+    #
+    #
 elif [ "$1" == "clang" ]; then
     #
     #
