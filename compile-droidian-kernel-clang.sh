@@ -2,7 +2,7 @@
 
 ## Script to compile a Droidian kernel with clang
 #
-# Version: 0.0.5
+# Version: 0.0.6
 #
 # Upstream-Name: prebuild-droidian-kernel-script
 # Source: https://github.com/droidian-berb/prebuild-droidian-kernel-script
@@ -38,10 +38,18 @@
 START_DIR="/buildd/sources"
 ROOTDIR="/opt"
 export ARCH=arm64
+# CLANG_VER="9.0-r353983c"
+# CLANG_VER="10.0-r370808"
+#CLANG_VER="12.0-r416183b"
+CLANG_VER="14.0-r450784d"
 
 fn_install_prereqs() {
  apt-get install linux-packaging-snippets bc bison build-essential ccache curl flex git git-lfs gnupg gperf imagemagick libelf-dev  libncurses5-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev python3 python-is-python3
 # libsdl1.2-dev
+}
+
+fn_install_prereqs_droidian_kernel_info() {
+    apt-get install binutils-aarch64-linux-gnu clang-android-${CLANG_VER} gcc-4.9-aarch64-linux-android g++-4.9-aarch64-linux-android libgcc-4.9-dev-aarch64-linux-android-cross
 }
 
 fn_enable_ccache() {
@@ -81,27 +89,32 @@ fn_invert_PATH_kernel_snippet() {
 }
 
 
-########################################
-## Clang manual compilation functions ##
-########################################
+######################################
+## Clang manual lineage build tools ##
+######################################
+fn_clang_manual_droidian_gcc_vars() {
+    CLANG_PATH="/usr/lib/llvm-android-${CLANG_VER}/bin"
+    export PATH="$PATH:${CLANG_PATH}"
+}
+fn_clang_manual_lineage_gcc_vars() {
+    #CLANG_PATH="$ROOTDIR/android_prebuilts_clang_kernel_linux-x86_clang-r416183b/bin"
+    export PATH=$PATH:$ROOTDIR/build-tools/linux-x86/bin:$ROOTDIR/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/aarch64-linux-android/bin:$ROOTDIR/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/bin::$ROOTDIR/android_prebuilts_tools-lineage/linux-x86/bin
+}
+
 fn_clang_manual_vars() {
     DEFCONFIG_BASE="sm8150_defconfig" ## For merge frags.
     DEFCONFIG_MAIN="vayu_user_defconfig" ## kernel build
-    KERNEL_RELEASE="4.14-290-xiaomi-vayu"
-    # CLANG_VER="9.0-r353983c"
-    # CLANG_VER="10.0-r370808"
-    # CLANG_VER="12.0-r416183b"
-    CLANG_VER="14.0-r450784d"
+    KERNEL_RELEASE="4.14-190-xiaomi-vayu"
     CROSS_TYPE="android" # | gnu
     # COMPILER="aarch64-linux-android-gcc-4.9"
     COMPILER=clang
-    CLANG_PATH="/usr/lib/llvm-android-${CLANG_VER}/bin"
+    CLANG_PATH="${CLANG_PATH}"
     # CLANG=$CLANG_PATH/clang
-    export PATH=${CLANG_PATH}:$PATH
-    export AS=aarch64-linux-${CROSS_TYPE}-as
-    export LD=aarch64-linux-${CROSS_TYPE}-ld
-    export AR=aarch64-linux-${CROSS_TYPE}-ar
-    export NM=aarch64-linux-${CROSS_TYPE}-nm
+    #export PATH=${CLANG_PATH}:$PATH
+    #export AS=aarch64-linux-${CROSS_TYPE}-as
+    #export LD=aarch64-linux-${CROSS_TYPE}-ld
+    #export AR=aarch64-linux-${CROSS_TYPE}-ar
+    #export NM=aarch64-linux-${CROSS_TYPE}-nm
     # export OBJCOPY=aarch64-linux-${CROSS_TYPE}-objcopy
     # export OBJDUMP=aarch64-linux-${CROSS_TYPE}-objdump
     # export STRIP=aarch64-linux-${CROSS_TYPE}-strip
@@ -109,9 +122,12 @@ fn_clang_manual_vars() {
     export CROSS_COMPILE_ARM32=aarch64-linux-${CROSS_TYPE}-
     export CLANG_TRIPLE=aarch64-linux-gnu-
 
-    export PATH=$PATH:$ROOTDIR/build-tools/linux-x86/bin:$ROOTDIR/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/aarch64-linux-android/bin:$ROOTDIR/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/bin:$ROOTDIR/android_prebuilts_clang_kernel_linux-x86_clang-r416183b/bin:$ROOTDIR/android_prebuilts_tools-lineage/linux-x86/bin
 }
 
+
+########################################
+## Clang manual compilation functions ##
+########################################
 fn_mrproper() {
     make -C /buildd/sources ARCH=${ARCH} \
 	O=/buildd/sources/out/KERNEL_OBJ \
@@ -199,12 +215,16 @@ fn_install_prereqs
 fn_enable_ccache
 
 ## CUSTOM TOOLCHAIN
-fn_install_toolchains
+# fn_install_toolchains
    ## Paths are defined in kernel-info.mk
 
 if [ "$1" == "releng" ]; then
+    fn_install_prereqs_droidian_kernel_info
     fn_build_kernel_droidian_releng
 elif [ "$1" == "clang" ]; then
+    fn_install_prereqs_droidian_kernel_info
+    fn_clang_manual_droidian_gcc_vars
+    #fn_clang_manual_lineage_gcc_vars
     fn_clang_manual_vars
 
     fn_menuconfig
@@ -216,5 +236,5 @@ elif [ "$1" == "clang" ]; then
     #### fn_build_kernel_clang_manual
 else
     echo
-    echo "Please type \"droidian\" or \"clang\""
+    echo "Please type \"releng\" or \"clang\""
 fi
