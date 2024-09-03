@@ -114,9 +114,9 @@ fn_clang_manual_lineage_gcc_vars() {
 }
 
 fn_releng_vars() {
-    export ARCH=$(cat "${KERNEL_DIR}" | grep "KERNEL_ARCH" | awk '{print $3}')
+    export ARCH=$(cat "${KERNEL_DIR}/debian/kernel-info.mk" | grep "KERNEL_ARCH" | awk '{print $3}')
     ## CLANG_VERSION requires a same name var in kernel-info.mk
-    CLANG_VERSION="$(cat "${KERNEL_DIR}" | grep "^CLANG_VERSION = " | awk '{print $3}')"
+    CLANG_VERSION="$(cat "${KERNEL_DIR}/debian/kernel-info.mk" | grep "^CLANG_VERSION = " | awk '{print $3}')"
 }
 
 fn_clang_manual_vars() {
