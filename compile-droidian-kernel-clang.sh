@@ -66,26 +66,22 @@ fn_enable_ccache() {
     ccache -o compression=false
 }
 
-fn_install_toolchains() {
+fn_install_lineage_toolchains() {
     cd /opt
-    ## If kernel is not previously downloaded.
-    # git clone https://github.com/LineageOS/android_kernel_device
-    #
     # gcc
     git clone -b lineage-18.1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git
     #
     # clang
 #    git clone https://github.com/LineageOS/android_prebuilts_clang_kernel_linux-x86_clang-r416183b.git
     #
-    # wireguard kernel module
-    # git clone https://github.com/WireGuard/wireguard-linux-compat.git
-    #
-    # built-tools
-
-# android-11.0.0_r0.100
-# android-13.0.0_r0.117
-    git clone -b android-11.0.0_r0.100 https://android.googlesource.com/kernel/prebuilts/build-tools
-    git clone -b lineage-18.1 https://github.com/LineageOS/android_prebuilts_tools-lineage.git
+    # build-tools
+    los_ver="lineage-18.1"
+    los_branch="android-11.0.0_r0.100"
+    # los_branch="android-13.0.0_r0.117"
+    # los_ver="lineage-20.1"
+    git clone -b ${los_branch} \
+    https://android.googlesource.com/kernel/prebuilts/build-tools
+    git clone -b ${los_branch} https://github.com/LineageOS/android_prebuilts_tools-lineage.git
 }
 
 fn_invert_PATH_kernel_snippet() {
@@ -231,9 +227,9 @@ fn_build_kernel_droidian_releng() {
 fn_install_prereqs
 fn_enable_ccache
 
-## CUSTOM TOOLCHAIN
-# fn_install_toolchains
-   ## Paths are defined in kernel-info.mk
+## Custom lineage build tools
+# fn_install_lineage_toolchains
+   ## Need to define paths in kernel-info.mk
 
 if [ "$1" == "releng" ]; then
     #
