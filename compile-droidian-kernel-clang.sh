@@ -85,6 +85,7 @@ fn_install_lineage_toolchains() {
 }
 
 fn_invert_PATH_kernel_snippet() {
+    ## NOT USED
     ## Patch releng kernel-snippet.mk
     ## To use the lineage toolchain, the FULL_PATH var needs to be defined with the PATH var at the beguin
     sed -i 's|FULL_PATH = $(BUILD_PATH):$(CURDIR)/debian/path-override:${PATH}|FULL_PATH = ${PATH}:$(BUILD_PATH):$(CURDIR)/debian/path-override|g' /usr/share/linux-packaging-snippets/kernel-snippet.mk
@@ -234,8 +235,6 @@ fn_enable_ccache
 if [ "$1" == "releng" ]; then
     #
     #
-    ## Reconf PATH in kernel snippet (if using custom gcc)
-#   fn_invert_PATH_kernel_snippet
 #   fn_install_prereqs_droidian_kernel_info
     fn_releng_vars
     fn_build_kernel_droidian_releng
