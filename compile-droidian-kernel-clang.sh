@@ -34,10 +34,17 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+abort() {
+    echo; echo "$*"; exit 1
+}
 
 START_DIR="/buildd/sources"
 KERNEL_DIR="${START_DIR}"
-## TODO: abort if not in KERNEL_DIR
+## Check for /buildd/sources dir
+[ -d "${KERNEL_DIR}" ] || abort "The expected ${KERNEL_DIR} does not exist!"
+## Check for a kernel tree root
+[ -f "$(pwd)/Kconfig" ] || abort "Not in a kernel source dir!"
+
 ROOTDIR="/opt"
 ## The arch var is used by clang-manual, but not by releng
 export ARCH=arm64
