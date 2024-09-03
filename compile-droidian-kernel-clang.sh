@@ -66,6 +66,13 @@ fn_enable_ccache() {
     ccache -o compression=false
 }
 
+fn_install_custom-clang() {
+    cd /usr/lib
+    wget https://github.com/droidian-berb/android-platform-prebuilts-clang-host-linux-x86/raw/main/llvm-clang-${CLANG_VERSION}-droidian-x86_aarch64.tar.gz
+    echo "Extracting clang..."
+    tar zxf llvm-clang-${CLANG_VERSION}-droidian-x86_aarch64.tar.gz
+}
+
 fn_install_lineage_toolchains() {
     cd /opt
     # gcc
@@ -239,6 +246,7 @@ if [ "$1" == "releng" ]; then
     #
     #
 #   fn_install_prereqs_droidian_kernel_info
+#   fn_install_custom-clang
     fn_releng_vars
     fn_build_kernel_droidian_releng
     #
