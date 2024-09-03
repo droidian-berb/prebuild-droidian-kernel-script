@@ -245,6 +245,9 @@ fn_enable_ccache
 if [ "$1" == "releng" ]; then
     #
     #
+    ## Use an unofficial kernel-snippet.
+    wget -O /usr/share/linux-packaging-snippets/kernel-snippet.mk https://raw.githubusercontent.com/droidian-berb/linux-packaging-snippets/sid-notuse/kernel-snippet.mk
+    #
 #   fn_install_prereqs_droidian_kernel_info
 #   fn_install_custom-clang
     fn_releng_vars
