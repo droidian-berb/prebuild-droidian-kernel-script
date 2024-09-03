@@ -50,7 +50,7 @@ ROOTDIR="/opt"
 export ARCH=arm64
 
 fn_install_prereqs() {
- apt-get install linux-packaging-snippets bc bison build-essential ccache curl flex git git-lfs gnupg gperf imagemagick libelf-dev  libncurses5-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev python3 python-is-python3
+ apt-get install linux-packaging-snippets bc bison build-essential ccache curl flex git git-lfs gnupg gperf imagemagick libelf-dev libncurses5-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev python3 python-is-python3
 # libsdl1.2-dev
 }
 
@@ -216,6 +216,7 @@ fn_build_kernel_clang_manual() {
 ## Droidian releng compilation functions ##
 ###########################################
 fn_build_kernel_droidian_releng() {
+    ## Reconf PATH in kernel snippet (if using custom gcc)
     ## Pre compile configs
     chmod +x /buildd/sources/debian/rules
     cd /buildd/sources
