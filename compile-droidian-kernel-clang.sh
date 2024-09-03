@@ -116,8 +116,10 @@ fn_clang_manual_vars() {
     ## Clang version vars
     # CLANG_VERSION="9.0-r353983c"
     # CLANG_VERSION="10.0-r370808"
-    # CLANG_VERSION="12.0-r416183b"
-    CLANG_VERSION="14.0-r450784d"
+    # CLANG_VERSION="11.0-r383902" 
+    CLANG_VERSION="12.0-r416183b"
+    # CLANG_VERSION="14.0-r450784d"
+    # CLANG_VERSION="17.0-r487747"
     ## defconfig files vars
     DEFCONFIG_SOC="vendor/sm8150_defconfig"
     DEFCONFIG_MODEL="vayu_user_defconfig"
