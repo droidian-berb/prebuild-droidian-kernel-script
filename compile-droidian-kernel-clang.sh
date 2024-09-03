@@ -2,7 +2,7 @@
 
 ## Script to compile a Droidian kernel with clang
 #
-# Version: 0.0.8
+# Version: 0.0.9
 #
 # Upstream-Name: prebuild-droidian-kernel-script
 # Source: https://github.com/droidian-berb/prebuild-droidian-kernel-script
