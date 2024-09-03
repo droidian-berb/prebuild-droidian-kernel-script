@@ -92,10 +92,12 @@ fn_invert_PATH_kernel_snippet() {
 ## Clang manual lineage build tools ##
 ######################################
 fn_clang_manual_droidian_gcc_vars() {
+    ## TODO: review if still needed
     CLANG_PATH="/usr/lib/llvm-android-${CLANG_VERSION}/bin"
     export PATH="$PATH:${CLANG_PATH}"
 }
 fn_clang_manual_lineage_gcc_vars() {
+    ## TODO: review if still needed
     #CLANG_PATH="$ROOTDIR/android_prebuilts_clang_kernel_linux-x86_clang-r416183b/bin"
     export PATH=$PATH:$ROOTDIR/build-tools/linux-x86/bin:$ROOTDIR/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/aarch64-linux-android/bin:$ROOTDIR/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/bin::$ROOTDIR/android_prebuilts_tools-lineage/linux-x86/bin
 }
